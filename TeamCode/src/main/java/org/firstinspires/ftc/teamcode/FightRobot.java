@@ -36,13 +36,19 @@ public class FightRobot extends LinearOpMode {
         VOID
     }
 
-    public String determineColor(ColorSensor colorSensor) {
-        if (colorSensor.red() >= 1300 && colorSensor.green() >= 1300 && colorSensor.blue() >= 1400) {
-            return "white";
-        } else if (colorSensor.red() >= 1300 && colorSensor.green() >= 1300) {
-            return "yellow";
+    public enum Colors {
+        WHITE,
+        YELLOW,
+        EMPTY
+    }
+
+    public Colors determineColor(ColorSensor colorSensor) {
+        if (colorSensor.red() > 900 && colorSensor.green() > 900 && colorSensor.blue() < 1500) {
+            return color.YELLOW;
+        } else if (colorSensor.red() > 1400 && colorSensor.green() > 1400 && colorSensor.blue() > 1400) {
+            return color.WHITE;
         }
-        return "nothing";
+        return color.EMPTY;
     }
 
     private void LeftSideMoving () {
@@ -64,64 +70,115 @@ public class FightRobot extends LinearOpMode {
     private void LowShovelPosition () {
         srvShovel.setPosition(0.75);
         mtArm.setPower(1);
-        mtArm.setTargetPosition(-7200);
+        mtArm.setTargetPosition(-7500);
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
     }
 
     private void DriveShovelPosition () {
-        srvShovel.setPosition(0.4);
+        srvShovel.setPosition(0.3);
         mtArm.setPower(1);
         mtArm.setTargetPosition(0);
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
     }
 
     private void HighShovelPosition () {
-        srvShovel.setPosition(0.4);
+        srvShovel.setPosition(0.3);
         mtArm.setPower(1);
-        mtArm.setTargetPosition(10000);
+        mtArm.setTargetPosition(19000);
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
     }
 
     private void CapturingMinerals () {
-        lock_sensor0_blue = color_sensor0.blue();
-        lock_sensor0_green = color_sensor0.green();
-        lock_sensor0_red = color_sensor0.red();
-
-        lock_sensor1_blue = color_sensor1.blue();
-        lock_sensor1_green = color_sensor1.green();
-        lock_sensor1_red = color_sensor1.red();
-
-        lock_sensor2_blue = color_sensor2.blue();
-        lock_sensor2_green = color_sensor2.green();
-        lock_sensor2_red = color_sensor2.red();
-
-        srvShovel.setPosition(0.5);
-        mtArm.setTargetPosition(-4000);
-
-        while (opModeIsActive() && !gamepad1.x) {
-            String colorOf0 = determineColor(color_sensor0);
-            String colorOf1 = determineColor(color_sensor1);
-            String colorOf2 = determineColor(color_sensor2);
-
-            if (colorOf0 == "yellow") {
-                lock0.setPosition(-1);
-            }
-            if (colorOf0 == "yellow") {
-                lock1.setPosition(-1);
-            }
-            if (colorOf0 == "yellow") {
-                lock2.setPosition(-1);
-            }
-            telemetry.addData("color of 0  : ", colorOf0);
-            telemetry.addData("color of 1  : ", colorOf1);
-            telemetry.addData("color of 2 : ", colorOf2);
-            telemetry.update();
+        srvShovel.setPosition(0.62);
+        mtArm.setTargetPosition(-3000);
+        while (mtArm.getCurrentPosition() < -3200) {
+            sleep(100);
+            telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
         }
+        srvShovel.setPosition(0.5);
+        //mtArm.setTargetPosition(-2000);
+
+//        while (opModeIsActive() && !gamepad1.x) {
+        clrSenCheck0 = determineColor(color_sensor0);
+        clrSenCheck1 = determineColor(color_sensor1);
+        clrSenCheck2 = determineColor(color_sensor2);
+        sleep(500);
+
+        clrSenCheck0 = determineColor(color_sensor0);
+        clrSenCheck1 = determineColor(color_sensor1);
+        clrSenCheck2 = determineColor(color_sensor2);
+
+            if ( clrSenCheck0 == color.YELLOW ) {
+                lock0.setPosition(0.4);
+                telemetry.addData("color of 0  : ", "YELLOW");
+            }
+            else if ( clrSenCheck0 == color.WHITE) {
+                lock0.setPosition(0.7);
+                telemetry.addData("color of 0  : ", "WHITE");
+            }
+            else {
+                lock0.setPosition(1);
+                telemetry.addData("color of 0  : ", "NOTHING");
+            }
+
+            if ( clrSenCheck1 == color.YELLOW ) {
+                lock1.setPosition(0.4);
+                telemetry.addData("color of 1  : ", "YELLOW");
+            }
+            else if ( clrSenCheck1 == color.WHITE) {
+                lock1.setPosition(0.7);
+                telemetry.addData("color of 1  : ", "WHITE");
+            }
+            else {
+                lock1.setPosition(1);
+                telemetry.addData("color of 1  : ", "NOTHING");
+            }
+
+            if ( clrSenCheck2 == color.YELLOW ) {
+                lock2.setPosition(0.4);
+                telemetry.addData("color of 2  : ", "YELLOW");
+            }
+            else if ( clrSenCheck2 == color.WHITE) {
+                lock2.setPosition(0.7);
+                telemetry.addData("color of 2  : ", "WHITE");
+            }
+            else {
+                lock2.setPosition(1);
+                telemetry.addData("color of 2  : ", "NOTHING");
+            }
+            telemetry.update();
+//        }
+        sleep(500);
+        /* BIG CHOICE */
+        if ( clrSenCheck0 == clrSenCheck1 && clrSenCheck0 == clrSenCheck2 && clrSenCheck0 != color.EMPTY ) {
+            lock0.setPosition(1);
+        }
+        else if ( clrSenCheck0 == clrSenCheck1 && clrSenCheck0 != color.EMPTY ) {
+            lock2.setPosition(1);
+        }
+        else if ( clrSenCheck0 == clrSenCheck2 && clrSenCheck0 != color.EMPTY ) {
+            lock1.setPosition(1);
+        }
+        else if ( clrSenCheck1 == clrSenCheck2 && clrSenCheck1 != color.EMPTY ) {
+            lock0.setPosition(1);
+        }
+        else {
+            /* RELEASE */
+            lock0.setPosition(1);
+            lock1.setPosition(1);
+            lock2.setPosition(1);
+        }
+        srvShovel.setPosition(0.9);
+        sleep(500);
+        srvShovel.setPosition(0.5);
     }
 
     private void DroppingMinerals () {
+        /* RELEASE */
+        lock0.setPosition(1);
+        lock1.setPosition(1);
+        lock2.setPosition(1);
         srvShovel.setPosition(0.95);
-
     }
 
     private void ShovelGoingUP () {
@@ -147,10 +204,10 @@ public class FightRobot extends LinearOpMode {
     }
 
     private void DrivingMotorControl () {
-        mtFrontLeft.setPower(tgtPowerL);
-        mtFrontRight.setPower(tgtPowerR);
-        mtBackLeft.setPower(tgtPowerL);
-        mtBackRight.setPower(tgtPowerR);
+        mtFrontLeft.setPower(tgtPowerL*SPEED_CORRECTION);
+        mtFrontRight.setPower(tgtPowerR*SPEED_CORRECTION);
+        mtBackLeft.setPower(tgtPowerL*SPEED_CORRECTION);
+        mtBackRight.setPower(tgtPowerR*SPEED_CORRECTION);
         mtBackWheel.setPower(tgtPowerL);
         telemetry.addData("Left Power", tgtPowerL);
         telemetry.addData("Right Power", tgtPowerR);
@@ -163,6 +220,7 @@ public class FightRobot extends LinearOpMode {
     private Servo lock0, lock1, lock2, srvShovel;
 
     Commands cmd;
+    Colors color, clrSenCheck0, clrSenCheck1, clrSenCheck2;
     static final double INCREMENT = 0.01;     // amount to slew servo each CYCLE_MS cycle
     static final int CYCLE_MS = 50;     // period of each cycle
     static final double MAX_POS = 1.0;     // Maximum rotational position
@@ -170,12 +228,11 @@ public class FightRobot extends LinearOpMode {
     static final double SIDE_MOVE_FRONT = 0.62;
     static final double SIDE_MOVE_REAR = 0.5;
     static final double SIDE_MOVE_REAR_CORRECTION = 0.9;
+    static final double SPEED_CORRECTION = 0.8;
     double position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
     boolean rampUp = true;
 
-    int lock_sensor0_blue, lock_sensor0_green, lock_sensor0_red;
-    int lock_sensor1_blue, lock_sensor1_green, lock_sensor1_red;
-    int lock_sensor2_blue, lock_sensor2_green, lock_sensor2_red;
+    int lock_sensor0, lock_sensor1, lock_sensor2;
     double tgtPowerL = 0, tgtPowerR = 0, sidePowerL = 0, sidePowerR = 0;
 
     @Override
@@ -234,9 +291,9 @@ public class FightRobot extends LinearOpMode {
                 cmd = Commands.DROP_MINERALS;
             else if (gamepad1.left_trigger > STICK_ADJUST)
                 cmd = Commands.LOW_SHOVEL_POS;
-            else if (gamepad1.left_bumper)
-                cmd = Commands.HIGH_SHOVEL_POS;
             else if (gamepad1.right_bumper)
+                cmd = Commands.HIGH_SHOVEL_POS;
+            else if (gamepad1.left_bumper)
                 cmd = Commands.DRIVE_SHOVEL_POS;
             else
                 cmd = Commands.VOID;
@@ -279,8 +336,8 @@ public class FightRobot extends LinearOpMode {
             /*** Backward moving here ***/
             tgtPowerR = -gamepad1.right_stick_y;
             tgtPowerL = gamepad1.left_stick_y;
-            sidePowerR = gamepad1.right_stick_x;
-            sidePowerL = gamepad1.left_stick_x;
+            sidePowerR = -gamepad1.right_stick_x;
+            sidePowerL = -gamepad1.left_stick_x;
 
             if (sidePowerL < -STICK_ADJUST && sidePowerR < -STICK_ADJUST)
                 cmd = Commands.MOVE_RIGHT_SIDE;
@@ -292,10 +349,14 @@ public class FightRobot extends LinearOpMode {
                 cmd = Commands.ADJ_DOWN_SHOVEL;
             else if (gamepad1.left_trigger > STICK_ADJUST)
                 cmd = Commands.LOW_SHOVEL_POS;
-            else if (gamepad1.left_bumper)
-                cmd = Commands.HIGH_SHOVEL_POS;
             else if (gamepad1.right_bumper)
+                cmd = Commands.HIGH_SHOVEL_POS;
+            else if (gamepad1.left_bumper)
                 cmd = Commands.DRIVE_SHOVEL_POS;
+            else if (gamepad1.left_stick_button)
+                cmd = Commands.HOOK_UP;
+            else if (gamepad1.right_stick_button)
+                cmd = Commands.HOOK_DOWN;
             else
                 cmd = Commands.VOID;
 
