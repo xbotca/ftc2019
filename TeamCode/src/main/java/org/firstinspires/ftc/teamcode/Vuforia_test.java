@@ -75,7 +75,7 @@ public class Vuforia_test extends LinearOpMode {
     private boolean targetVisibleCrater = false;
     private boolean targetVisibleSquare = false;
 
-    private DcMotor mtFrontLeft, mtFrontRight, mtBackLeft, mtBackRight;
+//    private DcMotor mtFrontLeft, mtFrontRight, mtBackLeft, mtBackRight;
 
 
 
@@ -86,7 +86,7 @@ public class Vuforia_test extends LinearOpMode {
     VuforiaLocalizer vuforia;
 
     @Override public void runOpMode() {
-        mtFrontRight = hardwareMap.get(DcMotor.class, "mt2");
+/*        mtFrontRight = hardwareMap.get(DcMotor.class, "mt2");
 //        motorRight.setDirection(DcMotorSimple.Direction.FORWARD);
 //        motorLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 //        mtFrontRight.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -102,6 +102,7 @@ public class Vuforia_test extends LinearOpMode {
 
         mtBackLeft = hardwareMap.get(DcMotor.class, "mt1");
 //        mtBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+*/
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
@@ -333,9 +334,22 @@ public class Vuforia_test extends LinearOpMode {
                 }
             }
 
-
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisibleCrater) {
+                // express position (translation) of robot in inches.
+                VectorF translation = lastLocation.getTranslation();
+                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                        translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+
+                // express the rotation of the robot in degrees.
+                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+            }
+            else {
+                telemetry.addData("Visible Target", "none");
+            }
+
+/*            if (targetVisibleCrater) {
                 telemetry.addData("I am facing crater", targetVisibleCrater);
                 telemetry.update();
             }
@@ -345,7 +359,7 @@ public class Vuforia_test extends LinearOpMode {
             }
             targetVisibleCrater = false;
             targetVisibleCrater = false;
-
+*/
             telemetry.update();
 
         }
