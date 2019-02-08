@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 /**
  * Created by pdenisov on 12/21/2018.
  */
-@Autonomous(name = "Concept: XBOT Auto Drive By Encoder", group="Xbotca")
+@Autonomous(name = "XBOT Autonomus Drive", group="Xbotca")
 public class AutonomusRobot extends LinearOpMode {
     /* Declare OpMode members. */
     private ColorSensor color_sensor0, color_sensor1, color_sensor2;
@@ -90,6 +90,8 @@ public class AutonomusRobot extends LinearOpMode {
         mtBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         mtBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        HookLowerPosition();
+
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d - %7d - %7d",
                 mtFrontLeft.getCurrentPosition(),
@@ -101,13 +103,18 @@ public class AutonomusRobot extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        HookUpperPosition();
+        sleep(5000);
+
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
+        encoderSideDrive(SIDE_SPEED, -4, -4, 4.0);  // Side moving
+
 //        encoderDrive(DRIVE_SPEED,  50,  50, 10.0);  // S1: Forward 47 Inches with 5 Sec timeout
 
-        encoderSideDrive(SIDE_SPEED, -40, -40, 10.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+//        encoderSideDrive(SIDE_SPEED, -40, -40, 10.0);  // Side moving
         sleep(5000);
-        encoderSideDrive(SIDE_SPEED, 40, 40, 10.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        encoderSideDrive(SIDE_SPEED, 40, 40, 10.0);
 
 //        encoderDrive(TURN_SPEED,   22, -22, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
 //        encoderDrive(DRIVE_SPEED,  45,  45, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
@@ -280,5 +287,16 @@ public class AutonomusRobot extends LinearOpMode {
 
             //  sleep(250);   // optional pause after each move
         }
+    }
+    private void HookLowerPosition () {
+        hook1.setPower(-0.79);
+        hook2.setPower(-0.79);  //going down 0.79
+        telemetry.addData("Hook is going:", " DOWN");
+    }
+
+    private void HookUpperPosition () {
+        hook1.setPower(0.08);
+        hook2.setPower(0.07);
+        telemetry.addData("Hook is going:", " UP");
     }
 }
