@@ -68,29 +68,32 @@ public class FightRobot extends LinearOpMode {
     }
 
     private void LowShovelPosition () {
-        srvShovel.setPosition(0.75);
+        srvShovel.setPosition(0.62);
+        grabber.setPower(-0.9);
         mtArm.setPower(1);
         mtArm.setTargetPosition(-7500);
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
     }
 
     private void DriveShovelPosition () {
-        srvShovel.setPosition(0.3);
+        grabber.setPower(0);
+        srvShovel.setPosition(0.4);
         mtArm.setPower(1);
         mtArm.setTargetPosition(0);
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
     }
 
     private void HighShovelPosition () {
-        srvShovel.setPosition(0.3);
+        grabber.setPower(0);
+        srvShovel.setPosition(0.4);
         mtArm.setPower(1);
-        mtArm.setTargetPosition(19000);
+        mtArm.setTargetPosition(16200);
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
     }
 
     private void CapturingMinerals () {
         srvShovel.setPosition(0.62);
-        mtArm.setTargetPosition(-3000);
+        mtArm.setTargetPosition(0);
         while (mtArm.getCurrentPosition() < -3200) {
             sleep(100);
             telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());
@@ -169,12 +172,15 @@ public class FightRobot extends LinearOpMode {
             lock2.setPosition(1);
         }
         srvShovel.setPosition(0.9);
-        sleep(500);
+        grabber.setPower(0.9);
+        sleep(700);
+        grabber.setPower(0);
         srvShovel.setPosition(0.5);
     }
 
     private void DroppingMinerals () {
         /* RELEASE */
+        grabber.setPower(0.2);
         lock0.setPosition(1);
         lock1.setPosition(1);
         lock2.setPosition(1);
@@ -216,8 +222,9 @@ public class FightRobot extends LinearOpMode {
     private ColorSensor color_sensor0, color_sensor1, color_sensor2;
     private DcMotor mtFrontLeft, mtFrontRight, mtBackLeft, mtBackRight;
     private DcMotor mtArm, mtBackWheel;
-    private CRServo hook1, hook2;
+    private CRServo hook1, hook2, grabber;
     private Servo lock0, lock1, lock2, srvShovel;
+
 
     Commands cmd;
     Colors color, clrSenCheck0, clrSenCheck1, clrSenCheck2;
@@ -242,6 +249,7 @@ public class FightRobot extends LinearOpMode {
         /*** Hardware Map ***/
         mtArm = hardwareMap.get(DcMotor.class, "ArmMotor");
         srvShovel = hardwareMap.get(Servo.class, "shovel");
+        grabber = hardwareMap.get(CRServo.class, "Grab");
         hook1 = hardwareMap.get(CRServo.class, "Hook1");
         hook2 = hardwareMap.get(CRServo.class, "Hook2");
         hook1.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -266,6 +274,8 @@ public class FightRobot extends LinearOpMode {
 //        mtArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        mtArm.setPower(0);
 //        mtArm.setTargetPosition(0);
+        grabber.setPower(0);
+        srvShovel.setPosition(0.4);
 
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Shovel position: ", mtArm.getCurrentPosition());

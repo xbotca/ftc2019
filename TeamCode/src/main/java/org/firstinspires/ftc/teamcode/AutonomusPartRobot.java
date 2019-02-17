@@ -31,8 +31,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 /**
  * Created by pdenisov on 12/21/2018.
  */
-@Autonomous(name = "XBOT Autonomus Drive", group="Xbotca")
-public class AutonomusRobot extends LinearOpMode {
+@Autonomous(name = "XBOT Crater Face", group="Xbotca")
+public class AutonomusPartRobot extends LinearOpMode {
     /* Declare OpMode members. */
     private ColorSensor color_sensor0, color_sensor1, color_sensor2;
     private DcMotor mtFrontLeft, mtFrontRight, mtBackLeft, mtBackRight;
@@ -150,12 +150,12 @@ public class AutonomusRobot extends LinearOpMode {
         encoderDrive(DRIVE_SPEED,  4,  4, 5.0);
         encoderDrive(DRIVE_SPEED,  4,  -4, 5.0); // Small turn
 
-        HookLowerPosition();
+       // HookLowerPosition();
 
         /* Just stop for control */
         sleep(2000);
 ////        encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // 90 DEGREE CLOCKWISE TURN
+        encoderDrive(DRIVE_SPEED,  -11,  11, 6.0);  // 90 DEGREE COUNTERCLOCKWISE TURN
 /*
         / * Lets start recognition * /
         if (tfod != null) {
@@ -206,21 +206,41 @@ public class AutonomusRobot extends LinearOpMode {
         }
 */
         /* Drive over*/
-        sleep(2000);
-        encoderSideDrive(SIDE_SPEED, -20,3.0); // negative means left, positive is right
+//        sleep(2000);
+        encoderSideDrive(SIDE_SPEED, 10,3.0); // negative means left, positive is right
 //        encoderDrive(DRIVE_SPEED,  10,  10, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        sleep(2000);
-//        encoderDrive(DRIVE_SPEED,  -10,  -10, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderSideDrive(SIDE_SPEED, 20,3.0);
 
-        sleep(2000);
+  //      sleep(600);
+        encoderDrive(DRIVE_SPEED,  40,  40, 3.0);  // S1: Forward 47 Inches with 5 Sec timeout
 
-//        encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
-//        encoderSideDrive(SIDE_SPEED, -3, -3, 3.0); // Side movement left
-//        encoderSideDrive(SIDE_SPEED, 3, 3, 3.0);
+        encoderDrive(DRIVE_SPEED, -5.5, 5.5, 3.0);
 
 
-//        encoderDrive(DRIVE_SPEED,  16,  16, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderSideDrive(DRIVE_SPEED, 10, 3.0);
+
+        encoderDrive(DRIVE_SPEED, 50, 50, 3.0);
+        sleep(600);
+
+        srvShovel.setPosition(0.9);
+        sleep(1000);
+
+        srvShovel.setPosition(0.4);
+//        sleep(600);
+
+        encoderDrive(DRIVE_SPEED, -40, -40, 3.0);
+
+
+        encoderSideDrive(DRIVE_SPEED, 10, 3.0);
+        encoderSideDrive(DRIVE_SPEED, -10, 3.0);
+        encoderDrive(DRIVE_SPEED, -21.75, 23, 3.0);
+//        sleep(600);
+
+
+        encoderDrive(1.3, 40, 50,3.0);
+        sleep(300);
+
+//        encoderDrive(1.3, 60, 60, 3.0);
+        sleep(600);
 
 
 
@@ -232,17 +252,6 @@ public class AutonomusRobot extends LinearOpMode {
 
 
 
-//        encoderSideDrive(SIDE_SPEED, -40, -40, 10.0);  // Side moving
-       // sleep(5000);
-      //  encoderSideDrive(SIDE_SPEED, 40, 40, 10.0);
-
-//        encoderDrive(TURN_SPEED,   22, -22, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-//        encoderDrive(DRIVE_SPEED,  45,  45, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-
-//        encoderSideDrive(DRIVE_SPEED, 20, 20, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
-
-//        robot.leftClaw.setPosition(1.0);            // S4: Stop and close the claw.
-//        robot.rightClaw.setPosition(0.0);
         sleep(1000);     // pause for servos to move
 
         telemetry.addData("Path", "Complete");
@@ -269,6 +278,7 @@ public class AutonomusRobot extends LinearOpMode {
         mtBackRight.setDirection(DcMotorSimple.Direction.FORWARD);
         mtFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         mtBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        mtBackWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -282,12 +292,14 @@ public class AutonomusRobot extends LinearOpMode {
             mtFrontRight.setTargetPosition(newFRightTarget);
             mtBackLeft.setTargetPosition(newBLeftTarget);
             mtBackRight.setTargetPosition(newBRightTarget);
+            mtBackWheel.setTargetPosition(newBLeftTarget);
 
             // Turn On RUN_TO_POSITION
             mtFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             mtFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             mtBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             mtBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            mtBackWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
@@ -295,6 +307,8 @@ public class AutonomusRobot extends LinearOpMode {
             mtFrontRight.setPower(Math.abs(speed));
             mtBackLeft.setPower(Math.abs(speed));
             mtBackRight.setPower(Math.abs(speed));
+            mtBackWheel.setPower(Math.abs(speed));
+
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -313,6 +327,7 @@ public class AutonomusRobot extends LinearOpMode {
                         mtFrontLeft.getCurrentPosition(),
                         mtFrontRight.getCurrentPosition(),
                         mtBackLeft.getCurrentPosition(),
+                        mtBackWheel.getCurrentPosition(),
                         mtBackRight.getCurrentPosition());
                 telemetry.update();
             }
@@ -322,12 +337,15 @@ public class AutonomusRobot extends LinearOpMode {
             mtFrontRight.setPower(0);
             mtBackLeft.setPower(0);
             mtBackRight.setPower(0);
+            mtBackWheel.setPower(0);
+
 
             // Turn off RUN_TO_POSITION
             mtFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mtFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mtBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             mtBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            mtBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             //  sleep(250);   // optional pause after each move
         }
