@@ -7,8 +7,14 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
+import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
@@ -31,14 +37,16 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 /**
  * Created by pdenisov on 12/21/2018.
  */
-@Autonomous(name = "XBOT Autonomus Drive", group="Xbotca")
+@Autonomous
 public class AutonomusRobot extends LinearOpMode {
     /* Declare OpMode members. */
     private ColorSensor color_sensor0, color_sensor1, color_sensor2;
     private DcMotor mtFrontLeft, mtFrontRight, mtBackLeft, mtBackRight;
     private DcMotor mtArm, mtBackWheel;
     private CRServo hook1, hook2;
+    //private LED ledtest0, ledtest1;
     private Servo lock0, lock1, lock2, srvShovel;
+    private SwitchableLight ledtest0, ledtest1;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -98,6 +106,9 @@ public class AutonomusRobot extends LinearOpMode {
         mtBackLeft = hardwareMap.get(DcMotor.class, "mt0");
         mtBackWheel = hardwareMap.get(DcMotor.class, "BackWheel");
 
+        ledtest0 = hardwareMap.get(SwitchableLight.class, "led0");
+        ledtest1 = hardwareMap.get(SwitchableLight.class, "led1");
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
@@ -114,6 +125,9 @@ public class AutonomusRobot extends LinearOpMode {
 
         HookLowerPosition();
         srvShovel.setPosition(0.4);
+        ledtest0.enableLight(false);
+        //ledtest1.setMode(DigitalChannel.Mode.OUTPUT);
+
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d - %7d - %7d",
@@ -131,6 +145,24 @@ public class AutonomusRobot extends LinearOpMode {
             tfod.activate();
         }
 
+
+        while (opModeIsActive())
+        {
+            ledtest0.enableLight(true);
+            ledtest1.enableLight(true);
+            sleep(500);
+
+            ledtest0.enableLight(false);
+            ledtest1.enableLight(false);
+            sleep(500);
+//            ledtest0.enableLight(true);
+            sleep(1000);
+//            ledtest0.enableLight(false);
+//            sleep(1000);
+        }
+
+        /*
+
         HookUpperPosition();
         sleep(4800);
 
@@ -146,16 +178,16 @@ public class AutonomusRobot extends LinearOpMode {
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
 
-        encoderSideDrive(SIDE_SPEED, 4, 4.0);  // Side moving
-        encoderDrive(DRIVE_SPEED,  4,  4, 5.0);
-        encoderDrive(DRIVE_SPEED,  4,  -4, 5.0); // Small turn
+        //encoderSideDrive(SIDE_SPEED, 4, 4.0);  // Side moving
+        //encoderDrive(DRIVE_SPEED,  4,  4, 5.0);
+        //encoderDrive(DRIVE_SPEED,  4,  -4, 5.0); // Small turn
 
-        HookLowerPosition();
+       // HookLowerPosition();
 
         /* Just stop for control */
-        sleep(2000);
+        //sleep(2000);
 ////        encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // 90 DEGREE CLOCKWISE TURN
+       // encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // 90 DEGREE CLOCKWISE TURN
 /*
         / * Lets start recognition * /
         if (tfod != null) {
@@ -207,11 +239,11 @@ public class AutonomusRobot extends LinearOpMode {
 */
         /* Drive over*/
         sleep(2000);
-        encoderSideDrive(SIDE_SPEED, -20,3.0); // negative means left, positive is right
+////        encoderSideDrive(SIDE_SPEED, -20,3.0); // negative means left, positive is right
 //        encoderDrive(DRIVE_SPEED,  10,  10, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
         sleep(2000);
 //        encoderDrive(DRIVE_SPEED,  -10,  -10, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderSideDrive(SIDE_SPEED, 20,3.0);
+///        encoderSideDrive(SIDE_SPEED, 20,3.0);
 
         sleep(2000);
 
@@ -243,7 +275,7 @@ public class AutonomusRobot extends LinearOpMode {
 
 //        robot.leftClaw.setPosition(1.0);            // S4: Stop and close the claw.
 //        robot.rightClaw.setPosition(0.0);
-        sleep(1000);     // pause for servos to move
+       // sleep(1000);     // pause for servos to move
 
         telemetry.addData("Path", "Complete");
         telemetry.update();

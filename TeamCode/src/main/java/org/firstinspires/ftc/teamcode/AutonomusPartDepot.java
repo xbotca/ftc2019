@@ -34,11 +34,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 @Autonomous(name = "XBOT Depot Face", group="Xbotca")
 public class AutonomusPartDepot extends LinearOpMode {
     /* Declare OpMode members. */
-    private ColorSensor color_sensor0, color_sensor1, color_sensor2;
     private DcMotor mtFrontLeft, mtFrontRight, mtBackLeft, mtBackRight;
     private DcMotor mtArm, mtBackWheel;
     private CRServo hook1, hook2;
-    private Servo lock0, lock1, lock2, srvShovel;
+    private Servo srvShovel;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -84,14 +83,6 @@ public class AutonomusPartDepot extends LinearOpMode {
         hook1.setDirection(DcMotorSimple.Direction.FORWARD);
         hook2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        color_sensor0 = hardwareMap.get(ColorSensor.class, "clr0");
-        color_sensor1 = hardwareMap.get(ColorSensor.class, "clr1");
-        color_sensor2 = hardwareMap.get(ColorSensor.class, "clr2");
-
-        lock0 = hardwareMap.get(Servo.class, "lock0");
-        lock1 = hardwareMap.get(Servo.class, "lock1");
-        lock2 = hardwareMap.get(Servo.class, "lock2");
-
         mtFrontRight = hardwareMap.get(DcMotor.class, "mt3");
         mtFrontLeft = hardwareMap.get(DcMotor.class, "mt2");
         mtBackRight = hardwareMap.get(DcMotor.class, "mt1");
@@ -112,8 +103,10 @@ public class AutonomusPartDepot extends LinearOpMode {
         mtBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         mtBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        mtArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         HookLowerPosition();
-        srvShovel.setPosition(0.4);
+        srvShovel.setPosition(0.25);
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d - %7d - %7d",
@@ -125,6 +118,7 @@ public class AutonomusPartDepot extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        mtArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         /** Activate Tensor Flow Object Detection. */
         if (tfod != null) {
@@ -132,7 +126,9 @@ public class AutonomusPartDepot extends LinearOpMode {
         }
 
         HookUpperPosition();
-        sleep(4800);
+        mtArm.setTargetPosition(3600);
+        mtArm.setPower(1);
+        sleep(5500);
 
 
 /*        / * SIDE DRIVING EXAMPLE - DON'T ERASE !! * /
@@ -153,7 +149,7 @@ public class AutonomusPartDepot extends LinearOpMode {
         // HookLowerPosition();
 
         /* Just stop for control */
-        sleep(2000);
+        sleep(1000);
 ////        encoderDrive(DRIVE_SPEED,  11,  -11, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
         encoderDrive(DRIVE_SPEED,  -11,  11, 6.0);  // 90 DEGREE COUNTERCLOCKWISE TURN
 /*
@@ -207,7 +203,7 @@ public class AutonomusPartDepot extends LinearOpMode {
 */
         /* Drive over*/
 //        sleep(2000);
-        encoderSideDrive(SIDE_SPEED, 10,3.0); // negative means left, positive is right
+        encoderSideDrive(SIDE_SPEED, 11,3.0); // negative means left, positive is right     10 !!
 //        encoderDrive(DRIVE_SPEED,  10,  10, 6.0);  // S1: Forward 47 Inches with 5 Sec timeout
 
         //      sleep(600);
@@ -215,7 +211,7 @@ public class AutonomusPartDepot extends LinearOpMode {
 
         encoderDrive(DRIVE_SPEED, 16.5, -16.5, 3.0);
 
-        encoderSideDrive(DRIVE_SPEED, -10, 3.0);
+        encoderSideDrive(DRIVE_SPEED, -12, 3.0);   //  10@@
 
         encoderDrive(DRIVE_SPEED, 40, 40, 3.0);
         sleep(600);
@@ -237,6 +233,7 @@ public class AutonomusPartDepot extends LinearOpMode {
 
         encoderSideDrive(DRIVE_SPEED, 10, 3.0);
         encoderSideDrive(DRIVE_SPEED, -7, 3.0);
+        encoderDrive(1, 60, 60, 3.0);  // TODO: new addition, check and correct
       /*  encoderDrive(DRIVE_SPEED, 40, 45,3.0);
         sleep(300);
 
